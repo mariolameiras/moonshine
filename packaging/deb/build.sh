@@ -76,7 +76,7 @@ Description: Game streaming server (Moonlight host)
  .
  After installation, enable the service with:
   sudo loginctl enable-linger \$USER
-  sudo systemctl enable --now moonshine@\$USER
+  systemctl --user enable --now moonshine@\$USER
 EOF
 
 # --- DEBIAN/changelog ---
@@ -151,7 +151,7 @@ To set up the streaming service for user '$INSTALL_USER':
      sudo loginctl enable-linger $INSTALL_USER
 
   2. Enable and start the service:
-     sudo systemctl enable --now moonshine@$INSTALL_USER
+     systemctl --user enable --now moonshine@$INSTALL_USER
 
   3. Connect with Moonlight client. A configuration file will be created
      automatically at ~/.config/moonshine/config.toml on first run.
