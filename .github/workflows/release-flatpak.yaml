@@ -16,6 +16,7 @@ jobs:
   build-flatpak:
     name: Build Flatpak
     runs-on: ubuntu-24.04
+    if: startsWith(github.ref, 'refs/tags/')
 
     steps:
     - name: Checkout code
