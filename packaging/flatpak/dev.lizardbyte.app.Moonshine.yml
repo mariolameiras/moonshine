@@ -1,0 +1,67 @@
+app-id: dev.lizardbyte.app.Moonshine
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: moonshine-launcher.sh
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=dri
+  - --system-talk-name=org.freedesktop.login1
+  - --filesystem=home
+  - --filesystem=xdg-config/moonshine:create
+
+modules:
+  - name: moonshine
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/moonshine/cargo
+    sources:
+      - type: dir
+        path: ../..
+    build-commands:
+      # Build main binary
+      - cargo build --release -p moonshine
+      # Build WSI layer
+      - cargo build --release -p moonshine-wsi
+
+      # Install binary
+      - install -Dm755 target/release/moonshine /app/bin/moonshine
+
+      # Install WSI layer
+      - install -Dm755 target/release/libmoonshine_wsi.so /app/lib/moonshine/vulkan-layers/libmoonshine_wsi.so
+      - install -Dm644 dist/VkLayer_moonshine_wsi.json /app/share/vulkan/explicit_layer.d/VkLayer_moonshine_wsi.json
+
+      # Install desktop file
+      - install -Dm644 dist/dev.lizardbyte.app.Moonshine.desktop /app/share/applications/dev.lizardbyte.app.Moonshine.desktop
+
+      # Install icon
+      - install -Dm644 dist/moonshine.svg /app/share/icons/hicolor/scalable/apps/dev.lizardbyte.app.Moonshine.svg
+
+      # Install metainfo
+      - install -Dm644 dist/dev.lizardbyte.app.Moonshine.metainfo.xml /app/share/metainfo/dev.lizardbyte.app.Moonshine.metainfo.xml
+
+      # Install man page
+      - install -Dm644 dist/moonshine.1 /app/share/man/man1/moonshine.1
+      - gzip /app/share/man/man1/moonshine.1
+
+      # Install launcher script
+      - |
+        cat > /app/bin/moonshine-launcher.sh << 'LAUNCHER'
+        #!/bin/sh
+        export VK_LAYER_PATH=/app/share/vulkan/explicit_layer.d
+        exec /app/bin/moonshine "$HOME/.config/moonshine/config.toml" "$@"
+        LAUNCHER
+      - chmod +x /app/bin/moonshine-launcher.sh
+
+      # Install udev rules (for reference, not active in sandbox)
+      - install -Dm644 dist/60-moonshine.rules /app/share/doc/moonshine/60-moonshine.rules
+      - install -Dm644 dist/moonshine-modules.conf /app/share/doc/moonshine/moonshine-modules.conf
+      - install -Dm644 dist/moonshine@.service /app/share/doc/moonshine/moonshine@.service

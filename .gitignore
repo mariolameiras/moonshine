@@ -1,2 +1,9 @@
 /target
 __pycache__/
+.AGENTS
+*.deb
+/debian/staging/
+*.AppImage
+/AppDir/
+/.appimage-tools/
+/.kilo/
