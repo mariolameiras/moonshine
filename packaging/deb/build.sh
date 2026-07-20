@@ -58,7 +58,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: amd64
-Depends: libc6, libdrm2, libevdev2, libexpat1, libgbm1, libopus0, libpulse0, libshaderc1, libvulkan1, libwayland-client0, libxkbcommon0, systemd
+Depends: libc6, libdrm2, libevdev2, libexpat1, libgbm1, libopus0, libpulse0, libshaderc1, libunwind8, libvulkan1, libwayland-client0, libxkbcommon0, systemd
 Recommends: udev
 Homepage: https://github.com/hgaiser/moonshine
 Maintainer: Mario Lameiras
