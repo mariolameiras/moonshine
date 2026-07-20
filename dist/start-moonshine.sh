@@ -61,4 +61,4 @@ echo "  XDG_RUNTIME_DIR: $XDG_RUNTIME_DIR" >&2
 echo "  DBUS_SESSION_BUS_ADDRESS: $DBUS_SESSION_BUS_ADDRESS" >&2
 
 # Execute moonshine with all arguments and environment variables preserved.
-exec /usr/bin/moonshine "$@"
+exec /usr/lib/moonshine/moonshine "$@"

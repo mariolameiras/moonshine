@@ -31,8 +31,16 @@ rm -rf "$STAGING"
 mkdir -p "$STAGING"/{DEBIAN,usr/bin,usr/lib/moonshine/vulkan-layers,usr/lib/modules-load.d,usr/lib/systemd/user,usr/share/vulkan/explicit_layer.d,usr/share/applications,usr/share/metainfo,usr/share/man/man1,usr/share/icons/hicolor/scalable/apps,lib/udev/rules.d}
 
 # --- Copy binaries ---
-cp target/release/moonshine "$STAGING/usr/bin/moonshine"
+cp target/release/moonshine "$STAGING/usr/lib/moonshine/moonshine"
 cp target/release/libmoonshine_wsi.so "$STAGING/usr/lib/moonshine/vulkan-layers/libmoonshine_wsi.so"
+
+# --- Wrapper script (defaults config to ~/.config/moonshine/config.toml) ---
+cat > "$STAGING/usr/bin/moonshine" <<'WRAPPER'
+#!/bin/sh
+CONFIG="${1:-$HOME/.config/moonshine/config.toml}"
+exec /usr/lib/moonshine/moonshine "$CONFIG"
+WRAPPER
+chmod +x "$STAGING/usr/bin/moonshine"
 
 # --- Copy dist/ assets ---
 cp dist/start-moonshine.sh "$STAGING/usr/bin/start-moonshine.sh"
@@ -58,7 +66,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: amd64
-Depends: libc6, libdrm2, libevdev2, libexpat1, libgbm1, libopus0, libpulse0, libshaderc1, libunwind8, libvulkan1, libwayland-client0, libxkbcommon0, systemd
+Depends: libc6, libdrm2, libevdev2, libexpat1, libgbm1, libopus0, libpulse0, libshaderc1, libvulkan1, libwayland-client0, libxkbcommon0, systemd
 Recommends: udev
 Homepage: https://github.com/hgaiser/moonshine
 Maintainer: Mario Lameiras

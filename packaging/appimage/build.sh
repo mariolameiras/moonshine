@@ -28,9 +28,9 @@ cargo build --release -p moonshine-wsi
 # --- Create AppDir ---
 APPDIR="AppDir"
 rm -rf "$APPDIR"
-mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/lib/moonshine/vulkan-layers"
+mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/lib/moonshine" "$APPDIR/usr/lib/moonshine/vulkan-layers"
 
-cp target/release/moonshine "$APPDIR/usr/bin/moonshine"
+cp target/release/moonshine "$APPDIR/usr/lib/moonshine/moonshine"
 cp target/release/libmoonshine_wsi.so "$APPDIR/usr/lib/moonshine/vulkan-layers/libmoonshine_wsi.so"
 
 # --- AppRun ---
@@ -40,7 +40,8 @@ HERE="$(dirname "$(readlink -f "$0")")"
 export PATH="$HERE/usr/bin:$PATH"
 export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/lib/moonshine/vulkan-layers:${LD_LIBRARY_PATH:-}"
 export VK_LAYER_PATH="$HERE/usr/share/vulkan/explicit_layer.d${VK_LAYER_PATH:+:$VK_LAYER_PATH}"
-exec "$HERE/usr/bin/moonshine" "$@"
+CONFIG="${1:-$HOME/.config/moonshine/config.toml}"
+exec "$HERE/usr/lib/moonshine/moonshine" "$CONFIG"
 EOF
 chmod +x "$APPDIR/AppRun"
 
