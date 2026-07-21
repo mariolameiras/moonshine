@@ -28,7 +28,7 @@ cargo build --release -p moonshine-wsi
 # --- Create staging directory ---
 STAGING="debian/staging"
 rm -rf "$STAGING"
-mkdir -p "$STAGING"/{DEBIAN,usr/bin,usr/lib/moonshine/vulkan-layers,usr/lib/modules-load.d,usr/lib/systemd/user,usr/share/vulkan/explicit_layer.d,usr/share/applications,usr/share/metainfo,usr/share/man/man1,usr/share/icons/hicolor/scalable/apps,lib/udev/rules.d}
+mkdir -p "$STAGING"/{DEBIAN,usr/bin,usr/lib/moonshine/vulkan-layers,usr/lib/modules-load.d,usr/lib/systemd/system,usr/share/vulkan/explicit_layer.d,usr/share/applications,usr/share/metainfo,usr/share/man/man1,usr/share/icons/hicolor/scalable/apps,lib/udev/rules.d}
 
 # --- Copy binaries ---
 cp target/release/moonshine "$STAGING/usr/lib/moonshine/moonshine"
@@ -45,7 +45,7 @@ chmod +x "$STAGING/usr/bin/moonshine"
 # --- Copy dist/ assets ---
 cp dist/start-moonshine.sh "$STAGING/usr/bin/start-moonshine.sh"
 chmod +x "$STAGING/usr/bin/start-moonshine.sh"
-cp dist/moonshine@.service "$STAGING/usr/lib/systemd/user/moonshine@.service"
+cp dist/moonshine@.service "$STAGING/usr/lib/systemd/system/moonshine@.service"
 cp dist/60-moonshine.rules "$STAGING/lib/udev/rules.d/60-moonshine.rules"
 cp dist/moonshine-modules.conf "$STAGING/usr/lib/modules-load.d/moonshine-modules.conf"
 cp dist/VkLayer_moonshine_wsi.json "$STAGING/usr/share/vulkan/explicit_layer.d/VkLayer_moonshine_wsi.json"
@@ -84,7 +84,7 @@ Description: Game streaming server (Moonlight host)
  .
  After installation, enable the service with:
   sudo loginctl enable-linger \$USER
-  systemctl --user enable --now moonshine@\$USER
+  sudo systemctl enable --now moonshine@\$USER
 EOF
 
 # --- DEBIAN/changelog ---
@@ -159,7 +159,7 @@ To set up the streaming service for user '$INSTALL_USER':
      sudo loginctl enable-linger $INSTALL_USER
 
   2. Enable and start the service:
-     systemctl --user enable --now moonshine@$INSTALL_USER
+     sudo systemctl enable --now moonshine@$INSTALL_USER
 
   3. Connect with Moonlight client. A configuration file will be created
      automatically at ~/.config/moonshine/config.toml on first run.
@@ -184,7 +184,7 @@ if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
 	for dir in /run/user/*/; do
 		uid=$(basename "$dir")
 		if [ -d "$dir/systemd" ]; then
-			runuser -u "#$uid" -- systemctl --user stop 'moonshine@*.service' 2>/dev/null || true
+			runuser -u "#$uid" -- systemctl stop 'moonshine@*.service' 2>/dev/null || true
 		fi
 	done
 fi
